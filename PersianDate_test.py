@@ -42,9 +42,9 @@ if __name__ == '__main__':
     print('Today Greg. datetime.date:', now.date())
     print('Today Per. date:', PD.today())
     print('Now in Iran:', PD.now())
-    print('Today Per. to Greg. tuple:', PD.today().Greg_date)
+    print('Today Per. to Greg. tuple:', PD.today().gregorian_date)
     print('Today Per. to datetime.date:', PD.today().datetime_date)
-    print('Today from Greg. tuple:', PD.from_GregDate(*G_td))
+    print('Today from Greg. tuple:', PD.from_gregorian_date(*G_td))
     print('Today from Greg. datetime.date:', PD.from_datetime_date(now.date()))
 
     print('-' * 32)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # print('-' * 32)
 
     # for y in range(1370, 1402):
-    #     print(y, _Vernal_Equinox(y, 1), _Vernal_Equinox(y, 2), sep='\t')
+    #     print(y, _vernal_equinox(y, 1), _vernal_equinox(y, 2), sep='\t')
 
     # N = 5000
     # sm = 0

@@ -1,12 +1,11 @@
 import datetime as _datetime
 from bisect import bisect as _bisect
 
-
 # Remainders of Persian leap years divided by 33
 _LEAP_REM = {1, 5, 9, 13, 17, 22, 26, 30}
 
 # Number of days before each year in a 33-Persian-year cycle (1-33),
-# assuming that the year that (year % 33 == 22) is the irregular Persian leap year.
+# assuming the year that (year % 33 == 22) is the irregular Persian leap year.
 _CUM_ND_1Y_33Y = (0, 366, 731, 1096, 1461, 1827, 2192, 2557, 2922, 3288, 3653,
                   4018, 4383, 4749, 5114, 5479, 5844, 6210, 6575, 6940, 7305, 7670,
                   8036, 8401, 8766, 9131, 9497, 9862, 10227, 10592, 10958, 11323, 11688)
@@ -20,15 +19,15 @@ _CUM_ND_1M_1COM_GY = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
 # Number of days before each month in a leap Greg. year
 _CUM_ND_1M_1LEAP_GY = (0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)
 
-# Number of days in 4 consecutive Greg. years, assuming last year is leap.
-_ND_4GY = 4*365 + 1
-# Number of days in 100 consecutive Greg. years, assuming last year is not leap.
-_ND_100GY = 25*_ND_4GY - 1
+# Number of days in 4 consecutive Greg. years, assuming the last year is leap.
+_ND_4GY = 4 * 365 + 1
+# Number of days in 100 consecutive Greg. years beginning from **01,
+# assuming the last year is not leap.
+_ND_100GY = 25 * _ND_4GY - 1
 # Number of days in 400 consecutive Greg. years
-_ND_400GY = 4*_ND_100GY + 1  
+_ND_400GY = 4 * _ND_100GY + 1
 
-
-# Offset to calculate Greg. day id from Per. day id
+# Offset of Greg. day id from Per. day id
 _GREG_ID_OFFSET = 226894
 
 # 3-letter short form of weekday names of the Persian calendar
@@ -40,9 +39,9 @@ _MONTH_ABBR = ('Far', 'Ord', 'Kho', 'Tir', 'Mor', 'Sha', 'Meh', 'Aba', 'Aza', 'D
 
 class PersianDate:
     """A class that defines a Persian date in Persian/Solar Hijri calendar."""
-    
+
     __slots__ = ('_year', '_month', '_day', '_weekday_id', '_day_of_week', '_day_of_year',
-                 '_week_of_year', '_leap_year', '_Greg_date', '_day_of_year', '_day_id', '_hash')
+                 '_week_of_year', '_leap_year', '_greg_date', '_day_of_year', '_day_id', '_hash')
 
     @property
     def year(self) -> int:
@@ -69,14 +68,14 @@ class PersianDate:
         return self._leap_year
 
     @property
-    def Greg_date(self) -> tuple[int, int, int]:
-        if self._Greg_date is None:
-            self._Greg_date = _GregDate_from_g_day_id(self._day_id + _GREG_ID_OFFSET)
-        return self._Greg_date
-        
+    def gregorian_date(self) -> tuple[int, int, int]:
+        if self._greg_date is None:
+            self._greg_date = _gregdate_from_g_day_id(self._day_id + _GREG_ID_OFFSET)
+        return self._greg_date
+
     @property
     def datetime_date(self) -> _datetime.date:
-        return _datetime.date(*self.Greg_date)
+        return _datetime.date(*self.gregorian_date)
 
     @property
     def day_of_year(self):
@@ -108,7 +107,7 @@ class PersianDate:
         if month < 1 or month > 12:
             raise ValueError("Not a valid month.")
         self._month = month
-        self._leap_year = is_leap_year(self._year)
+        self._leap_year = is_leap(self._year)
         if day > 31 or day < 0:
             raise ValueError("Not a valid day.")
         elif month > 6 and day > 30:
@@ -117,8 +116,8 @@ class PersianDate:
             raise ValueError("Not a valid day; year {} is not a leap year.".format(year))
         self._day = day
 
-        self._day_id = _calc_day_id(self._year, self._month, self._day)
-        self._Greg_date = None
+        self._day_id = _day_id_from_ymd(self._year, self._month, self._day)
+        self._greg_date = None
         self._weekday_id = (self._day_id + 5) % 7
         self._day_of_week = _WEEKDAY_ABBR[self._weekday_id]
         self._day_of_year = None
@@ -172,26 +171,27 @@ class PersianDate:
         return self._hash
 
 
-def is_leap_year(year: int) -> bool:
-    """This guaranteed to work for 1206 <= year <= 1498 """
+def is_leap(year: int) -> bool:
+    """Gives whether the Persian year is a leap year.
+    This guaranteed to work for 1206 <= year <= 1498 at least."""
     return year % 33 in _LEAP_REM
 
 
-def now(daylight_saving=False) -> PersianDate:
-    """Gives current Persian date of Iran (IRST). By default, doesn't consider for daylight saving."""
+def now(daylight_saving: bool = False) -> PersianDate:
+    """Gives current Persian date of Iran (IRST). By default, doesn't consider daylight saving."""
     from datetime import datetime, timezone, timedelta
-    now = datetime.now(timezone(timedelta(hours=3+int(daylight_saving), minutes=30)))
-    return from_GregDate(now.year, now.month, now.day)
+    n = datetime.now(timezone(timedelta(hours=3 + int(daylight_saving), minutes=30)))
+    return from_gregorian_date(n.year, n.month, n.day)
 
-    
+
 def today() -> PersianDate:
-    """Gives today Persian date."""
+    """Gives equivalent Persian date of today."""
     td = _datetime.date.today()
-    return from_GregDate(td.year, td.month, td.day)
-    
+    return from_gregorian_date(td.year, td.month, td.day)
 
-# day_id for 01-01-01 is 0
-def _calc_day_id(year: int, month: int, day: int) -> int:
+
+# day_id for Persian 01-01-01 is 0
+def _day_id_from_ymd(year: int, month: int, day: int) -> int:
     y = year - 1
     m = month - 1
     d = day - 1
@@ -203,8 +203,8 @@ def _calc_day_id(year: int, month: int, day: int) -> int:
     return d1 + d2 + d3
 
 
-# Greg. day_id for 01-01-01 is 0
-def _calc_Greg_day_id_from_GregDate(year: int, month: int, day: int) -> int:
+# Greg. day_id for Greg. 01-01-01 is 0
+def _greg_day_id_from_greg_ymd(year: int, month: int, day: int) -> int:
     y = year - 1
     m = month - 1
     d = day - 1
@@ -233,24 +233,18 @@ def _from_day_id(day_id: int) -> PersianDate:
     return PersianDate(year, month, day)
 
 
-def _float_per_datetime(year: int, month: int, day: int, h: int, m: int, s: float) -> float:
-    day = _calc_day_id(year, month, day)
-    f = (h + (m + s / 60) / 60) / 24
-    return day + f
-    
-
-def _GregDate_from_g_day_id(g_day_id: int):
+def _gregdate_from_g_day_id(g_day_id: int):
     n400y, rd = divmod(g_day_id, _ND_400GY)
     n100y, rd = divmod(rd, _ND_100GY)
     if n100y == 4:
         n100y = 3
         rd += _ND_100GY
-    n4y, rd   = divmod(rd, _ND_4GY)
-    n1y, rd   = divmod(rd, 365)
+    n4y, rd = divmod(rd, _ND_4GY)
+    n1y, rd = divmod(rd, 365)
     if n1y == 4:
         n1y = 3
         rd += 365
-    
+
     leap_year = n1y == 3 and (n4y != 24 or n100y == 3)
     cum_nbr_days = _CUM_ND_1M_1LEAP_GY if leap_year else _CUM_ND_1M_1COM_GY
 
@@ -261,17 +255,16 @@ def _GregDate_from_g_day_id(g_day_id: int):
     return year, month, day
 
 
-def from_GregDate(year: int, month: int, day: int) -> PersianDate:
-    g_id = _calc_Greg_day_id_from_GregDate(year, month, day)
+def from_gregorian_date(year: int, month: int, day: int) -> PersianDate:
+    """Gives Persian date equivalent of a Gregorian date"""
+    g_id = _greg_day_id_from_greg_ymd(year, month, day)
     return _from_day_id(g_id - _GREG_ID_OFFSET)
-    
-    
+
+
 def from_datetime_date(date: _datetime.date) -> PersianDate:
-    return  from_GregDate(date.year, date.month, date.day)
+    """Gives Persian date equivalent of a `datetime.date` object"""
+    return from_gregorian_date(date.year, date.month, date.day)
 
 
 if __name__ == '__main__':
-    td = today()
-    print("Today in Persian date:", td, ", Day number: ", td.day_of_year, ', Week number: ', td.week_of_year, sep='')
     print('Now in Iran (UTC+3:30):', now())
-
