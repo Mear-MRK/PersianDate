@@ -14,3 +14,7 @@ It is possible to subtract two Persian dates to calculate the difference in days
 
 ## Persian new year
 Module `persian_newyear` gives an estimate of the moment of the Persian new year (Nowruz) by computing the spring equinox using two different formulae. It must be noted that the result is not the exact official moment of Nowruz and usually has a 15 min difference. 
+
+## Simple usage
+`> python persian_date.py` outputs current Persian date of Iran (UTC+3:30).
+`> python persian_newyear.py` outputs estimated moment of next Persian new year in Iran.
