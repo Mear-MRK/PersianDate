@@ -123,12 +123,14 @@ class PersianDate:
         self._day_of_year = None
         self._week_of_year = None
         self._hash = hash(self._day_id)
-
+    
+    # Subtracting two dates gives their difference in days.
     def __sub__(self, oth) -> int:
         if isinstance(oth, PersianDate):
             return self._day_id - oth._day_id
         raise NotImplemented
-
+    
+    # Adding an int to a date gives a date that amount of days forward.
     def __add__(self, days: int):
         if isinstance(days, int):
             return _from_day_id(self._day_id + days)
