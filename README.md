@@ -10,7 +10,7 @@ The module includes:
   - The `from_gregorian_date` function, which returns the Persian date equivalent of a given Gregorian date.
   - The `from_datetime_date` function, which returns the Persian date equivalent of a `datetime.date` object.
   
-It is possible to subtract two Persian dates which gives the difference in days. Also, one can add an int to a date to get a new date that amount of days ahead.
+It is possible to subtract two Persian dates to calculate the difference in days. Additionally, by adding an integer to a date one can obtain a new date that corresponds to that number of days in the future.
 
 ## Persian new year
 Module `persian_newyear` gives an estimate of the moment of the Persian new year (Nowruz) by computing the spring equinox using two different formulae. It must be noted that the result is not the exact official moment of Nowruz and usually has a 15 min difference. 
