@@ -177,8 +177,8 @@ def is_leap(year: int) -> bool:
     return year % 33 in _LEAP_REM
 
 
-def now(daylight_saving: bool = False) -> PersianDate:
-    """Gives current Persian date of Iran (IRST). By default, doesn't consider daylight saving."""
+def now_in_iran(daylight_saving: bool = False) -> PersianDate:
+    """Gives current Persian date of Iran (IRST). By default, doesn't account for daylight saving."""
     from datetime import datetime, timezone, timedelta
     n = datetime.now(timezone(timedelta(hours=3 + int(daylight_saving), minutes=30)))
     return from_gregorian_date(n.year, n.month, n.day)
@@ -267,4 +267,4 @@ def from_datetime_date(date: _datetime.date) -> PersianDate:
 
 
 if __name__ == '__main__':
-    print('Now in Iran (UTC+3:30):', now())
+    print('Now in Iran (UTC+3:30):', now_in_iran())
