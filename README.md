@@ -17,4 +17,5 @@ Module `persian_newyear` gives an estimate of the moment of the Persian new year
 
 ## Simple usage
 `> python persian_date.py` outputs current Persian date of Iran (UTC+3:30).
+
 `> python persian_newyear.py` outputs estimated moment of next Persian new year in Iran.
