@@ -1,8 +1,9 @@
 """Under development"""
-from julian_date import _JD_OFFSET
+
 from persian_date import _from_day_id
 from math import modf as _modf
-
+# Corresponding Julian Day to the Persian date 01-01-01
+_JD_OFFSET = 1948320
 
 def vernal_equinox(per_year: int, tzone: float = 3.5, formula=1):
     """
@@ -33,5 +34,5 @@ if __name__ == '__main__':
 
     next_year = pdt.now_in_iran().year + 1
     print('Persian next New Year moment:')
-    print('Formula 1, {} {}:{}:{}'.format(*vernal_equinox(next_year)))
-    print('Formula 2, {} {}:{}:{}'.format(*vernal_equinox(next_year, formula=2)))
+    print('Formula 1: {} {}:{}:{}'.format(*vernal_equinox(next_year)))
+    print('Formula 2: {} {}:{}:{}'.format(*vernal_equinox(next_year, formula=2)))
