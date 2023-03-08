@@ -1,4 +1,5 @@
-"""Under development"""
+"""EXPERIMENTAL
+The module estimates Persian new year moment."""
 
 from persian_date import _from_day_id
 from math import modf as _modf
