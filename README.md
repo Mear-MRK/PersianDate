@@ -1,5 +1,4 @@
-# Persian Calendar
-This repository contains Python modules related to the Persian (Solar Hijri/Jalali) calendar (https://en.wikipedia.org/wiki/Solar_Hijri_calendar).
+This repository contains Python modules related to the Persian (Solar Hijri/Jalali) date (https://en.wikipedia.org/wiki/Solar_Hijri_calendar).
 
 ## Persian date
 Module `persian_date` represents Persian dates and can be used to convert from/to Gregorian dates. We are using a very simple rule to find Persian leap years which is in accordance with officially announced list of leap years for 1206 <= year <= 1498 by the Institute of Geophysics at the University of Tehran.
